@@ -1,15 +1,16 @@
 <script setup>
-import { reactive, ref } from 'vue'
+import { ref } from 'vue'
 import Bars from './components/Bars.vue'
 import Slider from '@vueform/slider'
 import '@vueform/slider/themes/default.css'
 
 const sortingAlgorithms = [
-  { name: 'Bubble Sort', value: 'bubbleSort' },
-  { name: 'Selection Sort', value: 'selectionSort' },
-  { name: 'Quick Sort', value: 'quickSort' },
-  { name: 'Heap Sort', value: 'heapSort' },
-  { name: 'Insertion Sort', value: 'insertionSort' }
+  { name: 'Bubble Sort', value: 'bubbleSort', group: 'quadratic' },
+  { name: 'Insertion Sort', value: 'insertionSort', group: 'quadratic' },
+  { name: 'Selection Sort', value: 'selectionSort', group: 'quadratic' },
+  { name: 'Quick Sort', value: 'quickSort', group: 'logarithmic' },
+  { name: 'Heap Sort', value: 'heapSort', group: 'logarithmic' },
+  { name: 'Merge Sort', value: 'mergeSort', group: 'logarithmic' }
 ]
 
 const selectedAlgorithm = ref('bubbleSort')
@@ -23,23 +24,38 @@ const arraySize = ref(20)
     <div class="optionsContainer">
       <div class="group">
         <label for="sortingAlgorithm">Sorting Algorithm </label>
-        <select name="sortingAlgorithm" v-model="selectedAlgorithm">
-          <option v-for="item in sortingAlgorithms" :value="item.value" :key="item.value">
-            {{ item.name }}
-          </option>
+        <select id="sortingAlgorithm" v-model="selectedAlgorithm">
+          <optgroup label="Quadratic">
+            <option
+              v-for="item in sortingAlgorithms.filter((alg) => alg.group === 'quadratic')"
+              :value="item.value"
+              :key="item.value"
+            >
+              {{ item.name }}
+            </option>
+          </optgroup>
+          <optgroup label="Logarithmic">
+            <option
+              v-for="item in sortingAlgorithms.filter((alg) => alg.group === 'logarithmic')"
+              :value="item.value"
+              :key="item.value"
+            >
+              {{ item.name }}
+            </option>
+          </optgroup>
         </select>
       </div>
       <div class="group">
         <label for="speed">Sorting speed (in ms) </label>
-        <input v-model="speed" name="speed" type="number" default="100" />
+        <input v-model="speed" id="speed" type="number" default="100" />
       </div>
       <div class="group">
-        <label for="arraySize"> Array Size </label>
-        <Slider id="slider" name="arraySize" v-model="arraySize" :min="2" :max="100" />
+        <label for="slider"> Array Size </label>
+        <Slider id="slider" v-model="arraySize" :min="2" :max="100" />
       </div>
     </div>
     <!-- Sort Algorithm Visualizer -->
-    <Bars :arraySize="arraySize" :speed="speed" />
+    <Bars :arraySize="arraySize" :speed="speed" :sortingAlgorithm="selectedAlgorithm" />
   </main>
 </template>
 
