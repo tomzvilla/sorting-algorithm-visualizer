@@ -263,6 +263,10 @@ function getSortingAlgorithm(type) {
 
 async function sort() {
   if (isSorting.value) return
+  if (isSorted([...array.value])) {
+    await animateSortedArray()
+    return
+  }
   isSorting.value = true
   moves.value = []
   const sortAlgorithm = getSortingAlgorithm(props.sortingAlgorithm)
@@ -271,20 +275,18 @@ async function sort() {
 }
 
 async function animate(moves) {
-  return new Promise((resolve) => {
-    if (moves.length === 0) {
+  return new Promise(async (resolve) => {
+    if (moves.value.length === 0) {
       currentMove.value = null
+      moves.value = []
+      await animateSortedArray()
       resolve()
       return
     }
     const move = moves.value.shift()
-    if (!move) {
-      currentMove.value = null
-      resolve()
-      return
-    }
-    const [i, j] = move?.indices
-    const value = move?.value
+
+    const [i, j] = move.indices
+    const value = move.value
 
     // Si hay un valor especificado en el movimiento, es un movimiento de fusión
     if (value !== undefined) {
@@ -303,10 +305,10 @@ async function animate(moves) {
     setTimeout(() => {
       animate(moves).then(resolve)
     }, props.speed)
-  }).then(() => animateSortedArray())
+  })
 }
 
-const animateSortedArray = () => {
+const animateSortedArray = async () => {
   let index = 0
   const highlightNextBar = () => {
     if (index >= array.value.length) {
@@ -322,11 +324,17 @@ const animateSortedArray = () => {
     document.getElementById(`bar-${index}`).style.backgroundColor = 'green'
     playNote(200 + array.value[index] * 500)
     setTimeout(() => {
+      document.getElementById(`bar-0`).style.backgroundColor = 'green'
       index++
       highlightNextBar()
-    }, 50)
+    }, 30)
   }
   highlightNextBar()
+}
+
+const isSorted = (arr) => {
+  const sortedArray = arr.sort()
+  return sortedArray.toString() === array.value.toString()
 }
 </script>
 
@@ -335,12 +343,12 @@ const animateSortedArray = () => {
     <div
       v-for="(item, index) in array"
       :key="index"
+      :id="`bar-${index}`"
       :style="{
         height: `${item * 100}%`,
         backgroundColor: currentMove && currentMove.includes(index) ? 'red' : 'white'
       }"
       class="bar"
-      :id="`bar-${index}`"
     ></div>
   </div>
   <div class="buttonContainer">
@@ -351,7 +359,6 @@ const animateSortedArray = () => {
 
 <style lang="css">
 .bar {
-  background-color: white;
   width: 20px;
   margin-left: 2px;
 }

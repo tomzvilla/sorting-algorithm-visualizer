@@ -69,7 +69,7 @@ function toggleMute() {
     <!-- Sort Algorithm Visualizer -->
     <Bars
       :arraySize="arraySize"
-      :speed="speed"
+      :speed="speed === '' ? 50 : speed"
       :sortingAlgorithm="selectedAlgorithm"
       :isMuted="isMuted"
     />
