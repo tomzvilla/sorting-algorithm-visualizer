@@ -1,10 +1,10 @@
 <script setup>
 import { ref, watchEffect } from 'vue'
-
 const props = defineProps({
   speed: Number,
   arraySize: Number,
-  sortingAlgorithm: String
+  sortingAlgorithm: String,
+  isMuted: Boolean
 })
 
 let audioContext = null
@@ -12,6 +12,11 @@ const array = ref([])
 const currentMove = ref(null)
 const moves = ref([])
 const isSorting = ref(false)
+
+function randomize() {
+  if (isSorting.value) return
+  initArray()
+}
 
 function initArray() {
   array.value = []
@@ -35,7 +40,7 @@ function playNote(freq) {
   oscillator.start()
   oscillator.stop(audioContext.currentTime + duration)
   const node = audioContext.createGain()
-  node.gain.value = 0.1
+  node.gain.value = props.isMuted ? 0 : 0.1
   node.gain.linearRampToValueAtTime(0, audioContext.currentTime + duration)
   oscillator.connect(node)
   node.connect(audioContext.destination)
@@ -263,7 +268,6 @@ async function sort() {
   const sortAlgorithm = getSortingAlgorithm(props.sortingAlgorithm)
   sortAlgorithm([...array.value])
   await animate(moves)
-  isSorting.value = false
 }
 
 async function animate(moves) {
@@ -299,12 +303,35 @@ async function animate(moves) {
     setTimeout(() => {
       animate(moves).then(resolve)
     }, props.speed)
-  })
+  }).then(() => animateSortedArray())
+}
+
+const animateSortedArray = () => {
+  let index = 0
+  const highlightNextBar = () => {
+    if (index >= array.value.length) {
+      playNote(900)
+      setTimeout(() => {
+        array.value.forEach((_, i) => {
+          document.getElementById(`bar-${i}`).style.backgroundColor = 'white'
+        })
+      }, 250)
+      isSorting.value = false
+      return
+    }
+    document.getElementById(`bar-${index}`).style.backgroundColor = 'green'
+    playNote(200 + array.value[index] * 500)
+    setTimeout(() => {
+      index++
+      highlightNextBar()
+    }, 50)
+  }
+  highlightNextBar()
 }
 </script>
 
 <template>
-  <div class="container">
+  <div class="container" id="container">
     <div
       v-for="(item, index) in array"
       :key="index"
@@ -313,11 +340,12 @@ async function animate(moves) {
         backgroundColor: currentMove && currentMove.includes(index) ? 'red' : 'white'
       }"
       class="bar"
+      :id="`bar-${index}`"
     ></div>
   </div>
   <div class="buttonContainer">
-    <button @click.prevent="initArray">Randomize</button>
-    <button @click.prevent="sort">Sort</button>
+    <button class="btn" @click.prevent="randomize">Randomize</button>
+    <button class="btn" @click.prevent="sort">Sort</button>
   </div>
 </template>
 
@@ -344,7 +372,7 @@ async function animate(moves) {
   align-items: center;
 }
 
-button {
+.btn {
   background-color: #fff;
   border-radius: 4px;
   border-style: none;
@@ -363,6 +391,10 @@ button {
   padding: 9px 20px 8px;
   position: relative;
   text-align: center;
+}
+
+.green {
+  background-color: green;
 }
 
 button:hover {

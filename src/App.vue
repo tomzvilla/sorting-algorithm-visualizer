@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import Bars from './components/Bars.vue'
 import Slider from '@vueform/slider'
+import speakerOn from './assets/speaker-on.svg'
+import speakerOff from './assets/speaker-off.svg'
 import '@vueform/slider/themes/default.css'
 
 const sortingAlgorithms = [
@@ -16,12 +18,22 @@ const sortingAlgorithms = [
 const selectedAlgorithm = ref('bubbleSort')
 const speed = ref(50)
 const arraySize = ref(20)
+const isMuted = ref(false)
+
+function toggleMute() {
+  isMuted.value = !isMuted.value
+}
 </script>
 
 <template>
   <main>
-    <h1>Sort Algorithm Visualizer</h1>
     <div class="optionsContainer">
+      <div class="header">
+        <h1>Sort Algorithm Visualizer</h1>
+        <button @click="toggleMute">
+          <img :src="isMuted ? speakerOff : speakerOn" alt="" />
+        </button>
+      </div>
       <div class="group">
         <label for="sortingAlgorithm">Sorting Algorithm </label>
         <select id="sortingAlgorithm" v-model="selectedAlgorithm">
@@ -55,7 +67,12 @@ const arraySize = ref(20)
       </div>
     </div>
     <!-- Sort Algorithm Visualizer -->
-    <Bars :arraySize="arraySize" :speed="speed" :sortingAlgorithm="selectedAlgorithm" />
+    <Bars
+      :arraySize="arraySize"
+      :speed="speed"
+      :sortingAlgorithm="selectedAlgorithm"
+      :isMuted="isMuted"
+    />
   </main>
 </template>
 
@@ -64,13 +81,35 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   margin: 0 auto;
+}
+
+.header {
+  margin-top: 2rem;
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;
+  align-items: center;
+  color: #fff;
+}
+
+.header img {
+  max-width: 36px;
+  filter: invert(92%) sepia(100%) saturate(0%) hue-rotate(202deg) brightness(106%) contrast(106%);
+}
+
+.header > button {
+  background-color: transparent;
+  border-style: none;
+  box-sizing: border-box;
+  cursor: pointer;
 }
 
 .optionsContainer {
   display: flex;
   flex-direction: column;
-  width: 500px;
+  width: 35%;
   align-items: flex-start;
   justify-content: center;
 }
