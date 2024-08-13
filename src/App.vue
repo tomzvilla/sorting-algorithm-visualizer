@@ -29,7 +29,7 @@ function toggleMute() {
   <main>
     <div class="optionsContainer">
       <div class="header">
-        <h1>Sort Algorithm Visualizer</h1>
+        <h1>Sorting Algorithms Visualizer</h1>
         <button @click="toggleMute">
           <img :src="isMuted ? speakerOff : speakerOn" alt="" />
         </button>

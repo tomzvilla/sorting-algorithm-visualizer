@@ -27,7 +27,9 @@ function initArray() {
 }
 
 watchEffect(() => {
-  initArray()
+  if (!isSorting.value) {
+    initArray()
+  }
 })
 
 function playNote(freq) {
