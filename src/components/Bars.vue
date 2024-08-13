@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watchEffect } from 'vue'
+import { ref, watch } from 'vue'
 const props = defineProps({
   speed: Number,
   arraySize: Number,
@@ -26,11 +26,15 @@ function initArray() {
   currentMove.value = null
 }
 
-watchEffect(() => {
-  if (!isSorting.value) {
-    initArray()
+watch(
+  () => props.arraySize,
+  () => {
+    if (!isSorting.value) {
+      console.log('SORTING ENDED,')
+      initArray()
+    }
   }
-})
+)
 
 function playNote(freq) {
   if (audioContext === null) {
@@ -338,6 +342,7 @@ const isSorted = (arr) => {
   const sortedArray = arr.sort()
   return sortedArray.toString() === array.value.toString()
 }
+initArray()
 </script>
 
 <template>
