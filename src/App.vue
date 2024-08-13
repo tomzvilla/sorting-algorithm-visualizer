@@ -78,11 +78,12 @@ function toggleMute() {
 
 <style scoped>
 main {
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 0 auto;
+  margin: auto auto;
 }
 
 .header {
@@ -137,5 +138,26 @@ main {
   margin-top: 0.5rem;
   width: 100%;
   height: 2rem;
+}
+
+h1 {
+  text-align: center;
+  font-size: 2.5rem;
+}
+
+@media screen and (max-width: 1024px) {
+  .optionsContainer {
+    width: 65%;
+  }
+  h1 {
+    text-align: center;
+    font-size: 2rem;
+  }
+}
+
+@media screen and (max-width: 375px) {
+  .optionsContainer {
+    width: 85%;
+  }
 }
 </style>

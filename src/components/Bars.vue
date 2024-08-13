@@ -407,4 +407,11 @@ const isSorted = (arr) => {
 button:hover {
   opacity: 0.75;
 }
+
+@media screen and (max-width: 450px) {
+  .container {
+    height: 390px;
+    max-width: 300px;
+  }
+}
 </style>
